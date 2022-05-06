@@ -19,7 +19,7 @@ public class WebFluxApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Flux<String> nombres = Flux.just("Jhon","Juan","Pedro","","Andrea")
+		Flux<String> nombres = Flux.just("Jhon","Juan","Pedro","Maria","Andrea")
 				.doOnNext(e ->{
 					if( e.isEmpty()){
 						throw new RuntimeException("Los nombres no pueden ser vacios");
@@ -29,7 +29,13 @@ public class WebFluxApplication implements CommandLineRunner {
 
 		//subscribe
 		nombres.subscribe(e -> log.info(e),
-				error -> log.error( error.getMessage())); // observador, consumidor
+				error -> log.error(error.getMessage()),
+				new Runnable() {
+					@Override
+					public void run() {
+						log.info("Ha finalizado la ejecucion del observable con exito");
+					}
+				}); // observador, consumidor
 	}
 
 
