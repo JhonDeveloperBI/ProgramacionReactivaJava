@@ -26,8 +26,27 @@ public class WebFluxApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
     // exampleIterable();
 	 //exampleFlatMap();
-	 exampleToString();
+	 //exampleToString();
+		exampleCollectList();
+	}
 
+	public void exampleCollectList() throws Exception {
+
+		List<Usuario> usuariosList = new ArrayList<>();
+		usuariosList.add(new Usuario("Jhon", "Pepito"));
+		usuariosList.add(new Usuario("Juan", "Guzman"));
+		usuariosList.add(new Usuario("Pedro", "Tal"));
+		usuariosList.add(new Usuario("Maria", "Valbuena"));
+		usuariosList.add(new Usuario("Andrea", "Ronaldo"));
+		usuariosList.add(new Usuario("Bruce", "Lee"));
+		usuariosList.add(new Usuario("Bruce", "Willis"));
+
+		Flux.fromIterable(usuariosList)
+				.collectList()
+				.subscribe(lista -> {
+					lista.forEach(item ->
+					log.info(item.toString()) );
+				});
 	}
 
 
