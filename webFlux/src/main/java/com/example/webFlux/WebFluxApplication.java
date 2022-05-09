@@ -21,13 +21,14 @@ public class WebFluxApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Flux<Usuario> nombres = Flux.just("Jhon","Juan","Pedro","Maria","Andrea")
-				.map(nombre ->  new Usuario(nombre.toUpperCase(),null))
+		Flux<Usuario> nombres = Flux.just("Jhon Pepito","Juan Guzman","Pedro Tal","Maria Valbuena","Andrea Ronaldo","Bruce Lee","Bruce Willis")
+				.map(nombre ->  new Usuario(nombre.split(" ")[0].toUpperCase(),nombre.split(" ")[1].toUpperCase()))
+				.filter(usuario ->  usuario.getNombre().toLowerCase().equals(("bruce")) )
 				.doOnNext(usuario ->{
 					if( usuario == null){
 						throw new RuntimeException("Los nombres no pueden ser vacios");
 					}
-					System.out.println(usuario.getNombre());
+					System.out.println(usuario.getNombre().concat(usuario.getApellido()));
 				})
 				.map(usuario -> { String  nombre = usuario.getNombre().toLowerCase();
 				usuario.setNombre( nombre);
