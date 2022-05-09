@@ -8,6 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -21,7 +23,17 @@ public class WebFluxApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Flux<String> nombres = Flux.just("Jhon Pepito","Juan Guzman","Pedro Tal","Maria Valbuena","Andrea Ronaldo","Bruce Lee","Bruce Willis");
+
+		List<String> usuariosList = new ArrayList<>();
+		usuariosList.add("Jhon Pepito");
+		usuariosList.add("Juan Guzman");
+		usuariosList.add("Pedro Tal");
+		usuariosList.add("Maria Valbuena");
+		usuariosList.add("Andrea Ronaldo");
+		usuariosList.add("Bruce Lee");
+		usuariosList.add("Bruce Willis");
+
+		Flux<String> nombres = Flux.fromIterable(usuariosList); /*Flux.just("Jhon Pepito","Juan Guzman","Pedro Tal","Maria Valbuena","Andrea Ronaldo","Bruce Lee","Bruce Willis");*/
 
 		Flux<Usuario> usuarios = nombres.map(nombre ->  new Usuario(nombre.split(" ")[0].toUpperCase(),nombre.split(" ")[1].toUpperCase()))
 				.filter(usuario ->  usuario.getNombre().toLowerCase().equals(("bruce")) )
