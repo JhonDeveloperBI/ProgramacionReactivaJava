@@ -25,8 +25,36 @@ public class WebFluxApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
     // exampleIterable();
-	 exampleFlatMap();
+	 //exampleFlatMap();
+	 exampleToString();
 
+	}
+
+
+	public void exampleToString() throws Exception {
+
+		List<Usuario> usuariosList = new ArrayList<>();
+		usuariosList.add(new Usuario("Jhon","Pepito"));
+		usuariosList.add(new Usuario("Juan","Guzman"));
+		usuariosList.add(new Usuario("Pedro","Tal"));
+		usuariosList.add(new Usuario("Maria","Valbuena"));
+		usuariosList.add(new Usuario("Andrea", "Ronaldo"));
+		usuariosList.add(new Usuario("Bruce" ,"Lee"));
+		usuariosList.add(new Usuario("Bruce","Willis"));
+
+		Flux.fromIterable(usuariosList)
+				.map(usuario -> usuario.getNombre().toUpperCase().concat(" ").concat(usuario.getApellido().toUpperCase()))
+				.flatMap(nombre -> {
+					if(nombre.contains("bruce".toUpperCase())){
+						return Mono.just(nombre);
+					}else{
+						return Mono.empty();
+					}
+				}  )
+				.map(nombre -> {
+					return nombre.toLowerCase();
+				})
+				.subscribe( u -> log.info(u.toString())); // observador, consumidor
 	}
 
 	public void exampleFlatMap() throws Exception {
