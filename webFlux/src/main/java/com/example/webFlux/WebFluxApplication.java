@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,39 @@ public class WebFluxApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+    // exampleIterable();
+	 exampleFlatMap();
+
+	}
+
+	public void exampleFlatMap() throws Exception {
+
+		List<String> usuariosList = new ArrayList<>();
+		usuariosList.add("Jhon Pepito");
+		usuariosList.add("Juan Guzman");
+		usuariosList.add("Pedro Tal");
+		usuariosList.add("Maria Valbuena");
+		usuariosList.add("Andrea Ronaldo");
+		usuariosList.add("Bruce Lee");
+		usuariosList.add("Bruce Willis");
+
+		 Flux.fromIterable(usuariosList)
+				 .map(nombre ->  new Usuario(nombre.split(" ")[0].toUpperCase(),nombre.split(" ")[1].toUpperCase()))
+				 .flatMap(usuario -> {
+					 if(usuario.getNombre().equalsIgnoreCase("bruce")){
+						 return Mono.just(usuario);
+					 }else{
+						 return Mono.empty();
+					 }
+				 }  )
+				 .map(usuario -> { String  nombre = usuario.getNombre().toLowerCase();
+					usuario.setNombre( nombre);
+					return usuario;
+				 })
+				 .subscribe( u -> log.info(u.toString())); // observador, consumidor
+	}
+
+	public void exampleIterable() throws Exception {
 
 		List<String> usuariosList = new ArrayList<>();
 		usuariosList.add("Jhon Pepito");
@@ -44,8 +78,8 @@ public class WebFluxApplication implements CommandLineRunner {
 					System.out.println(usuario.getNombre().concat(usuario.getApellido()));
 				})
 				.map(usuario -> { String  nombre = usuario.getNombre().toLowerCase();
-				usuario.setNombre( nombre);
-				return usuario;
+					usuario.setNombre( nombre);
+					return usuario;
 				});
 
 
@@ -59,6 +93,4 @@ public class WebFluxApplication implements CommandLineRunner {
 					}
 				}); // observador, consumidor
 	}
-
-
 }
