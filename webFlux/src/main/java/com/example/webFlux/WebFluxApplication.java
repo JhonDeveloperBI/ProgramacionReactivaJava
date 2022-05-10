@@ -1,6 +1,8 @@
 package com.example.webFlux;
 
+import com.example.webFlux.models.Comentarios;
 import com.example.webFlux.models.Usuario;
+import com.example.webFlux.models.UsuarioComentarios;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +29,25 @@ public class WebFluxApplication implements CommandLineRunner {
     // exampleIterable();
 	 //exampleFlatMap();
 	 //exampleToString();
-		exampleCollectList();
+	//	exampleCollectList();
+			exampleUserWithComentariosFlatMap();
+	}
+
+
+	public void exampleUserWithComentariosFlatMap(){
+		Mono<Usuario> usuarioMono = Mono.fromCallable(()-> new Usuario("John","Doe"));
+
+		Mono<Comentarios> comentariosUsuarioMono = Mono.fromCallable(()->{
+			Comentarios comentarios = new Comentarios();
+			comentarios.addComentario("comentario 1");
+			comentarios.addComentario("comentario 2");
+			comentarios.addComentario("comentario 3");
+
+			return comentarios;
+		});
+
+		usuarioMono.flatMap( u -> comentariosUsuarioMono.map(c -> new UsuarioComentarios(u,c)))
+				.subscribe(uc -> log.info(uc.toString()));
 	}
 
 	public void exampleCollectList() throws Exception {
