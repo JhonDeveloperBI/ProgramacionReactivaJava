@@ -30,7 +30,50 @@ public class WebFluxApplication implements CommandLineRunner {
 	 //exampleFlatMap();
 	 //exampleToString();
 	//	exampleCollectList();
-			exampleUserWithComentariosFlatMap();
+		//	exampleUserWithComentariosFlatMap();
+		//exampleUserWithComentariosZipWith();
+		exampleUserWithComentariosZipWithForm2();
+	}
+
+	public void exampleUserWithComentariosZipWithForm2(){
+		Mono<Usuario> usuarioMono = Mono.fromCallable(()-> new Usuario("John","Doe"));
+
+		Mono<Comentarios> comentariosUsuarioMono = Mono.fromCallable(()->{
+			Comentarios comentarios = new Comentarios();
+			comentarios.addComentario("comentario 1");
+			comentarios.addComentario("comentario 2");
+			comentarios.addComentario("comentario 3");
+
+			return comentarios;
+		});
+
+		Mono<UsuarioComentarios> usuarioComentariosMono =	usuarioMono
+				.zipWith( comentariosUsuarioMono )
+						.map( tuple ->{
+							Usuario u = tuple.getT1();
+							Comentarios c = tuple.getT2();
+							return  new UsuarioComentarios(u,c);
+						});
+
+		usuarioComentariosMono.subscribe(uc -> log.info(uc.toString()));
+	}
+
+	public void exampleUserWithComentariosZipWith(){
+		Mono<Usuario> usuarioMono = Mono.fromCallable(()-> new Usuario("John","Doe"));
+
+		Mono<Comentarios> comentariosUsuarioMono = Mono.fromCallable(()->{
+			Comentarios comentarios = new Comentarios();
+			comentarios.addComentario("comentario 1");
+			comentarios.addComentario("comentario 2");
+			comentarios.addComentario("comentario 3");
+
+			return comentarios;
+		});
+
+	Mono<UsuarioComentarios> usuarioComentariosMono =	usuarioMono
+			.zipWith(comentariosUsuarioMono,(usuario, comentariosUsuario ) -> new UsuarioComentarios(usuario,comentariosUsuario) );
+
+	  usuarioComentariosMono.subscribe(uc -> log.info(uc.toString()));
 	}
 
 
