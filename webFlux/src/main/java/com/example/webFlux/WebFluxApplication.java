@@ -3,6 +3,8 @@ package com.example.webFlux;
 import com.example.webFlux.models.Comentarios;
 import com.example.webFlux.models.Usuario;
 import com.example.webFlux.models.UsuarioComentarios;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -37,7 +39,56 @@ public class WebFluxApplication implements CommandLineRunner {
 		//exampleInterval();
 	//	exampleDelayElements();
 		//exampleIntervalInfinito();
-		exampleIntervalFromCreated();
+		//exampleIntervalFromCreated();
+		contraPresion();
+	}
+
+	// contrapesion backpresure
+	public void contraPresion(){
+
+	/*	Flux.range(1,10)
+				.log() //traza completa
+				.subscribe( new Subscriber<Integer>(){
+
+					private Subscription s;
+
+					private Integer limite = 5;
+					private  Integer consumido = 0;
+
+					@Override
+					public void onSubscribe(Subscription subscription) {
+						this.s = subscription;
+						//s.request(Long.MAX_VALUE);
+						s.request(limite);
+					}
+
+					@Override
+					public void onNext(Integer o) {
+						log.info(o.toString());
+						consumido++;
+						if( consumido == limite){
+							consumido = 0;
+							s.request(limite);
+						}
+					}
+
+					@Override
+					public void onError(Throwable throwable) {
+
+					}
+
+					@Override
+					public void onComplete() {
+
+					}
+				});
+
+	 */
+
+		Flux.range(1,10)
+				.log()
+				.limitRate(2)
+				.subscribe();
 	}
 
 	public void exampleIntervalFromCreated(){
