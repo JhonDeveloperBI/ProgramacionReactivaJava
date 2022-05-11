@@ -12,9 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -38,7 +36,35 @@ public class WebFluxApplication implements CommandLineRunner {
 		//exampleZipWithRangos();
 		//exampleInterval();
 	//	exampleDelayElements();
-		exampleIntervalInfinito();
+		//exampleIntervalInfinito();
+		exampleIntervalFromCreated();
+	}
+
+	public void exampleIntervalFromCreated(){
+		Flux.create(emitter -> {
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+				private Integer contador =  0;
+				@Override
+				public void run() {
+					emitter.next(++contador);
+					if(contador == 10){
+						timer.cancel();
+						emitter.complete();
+					}
+
+					if( contador == 8){
+						timer.cancel();
+						emitter.error( new InterruptedException("Error, proceso interrumpido flux 8"));
+					}
+				}
+			}, 1000, 1000);
+		})
+			//	.doOnNext(next -> log.info(next.toString()))
+			//	.doOnComplete(() -> log.info(" Termino !"))
+				.subscribe( next -> log.info( next.toString()),
+						error -> log.error(error.getMessage()),
+				() -> log.info("proceso terminado") );
 	}
 
 	public void exampleIntervalInfinito() throws InterruptedException {
