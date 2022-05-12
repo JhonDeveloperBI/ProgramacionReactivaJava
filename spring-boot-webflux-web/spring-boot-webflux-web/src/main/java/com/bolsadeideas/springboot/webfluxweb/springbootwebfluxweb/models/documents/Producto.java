@@ -21,6 +21,9 @@ public class Producto {
     private  Double precio;
     private Date createAt;
 
+   public Producto(){
+
+   }
 
     public Producto(String nombre, Double precio){
         this.nombre = nombre;
