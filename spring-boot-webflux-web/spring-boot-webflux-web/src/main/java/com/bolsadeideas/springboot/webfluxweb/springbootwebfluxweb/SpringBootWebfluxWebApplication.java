@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Flux;
 
 @SpringBootApplication
@@ -18,12 +19,17 @@ public class SpringBootWebfluxWebApplication implements CommandLineRunner {
 	@Autowired
 	private ProductoDao dao;
 
+	@Autowired
+	private ReactiveMongoTemplate mongoTemplate;
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootWebfluxWebApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
+		mongoTemplate.dropCollection("productos").subscribe();
+
 		Flux.just(new Producto("TV panasonic",550.36),
 				new Producto("Playstation",600.00),
 				new Producto("Playstation 1 ",600.00),
