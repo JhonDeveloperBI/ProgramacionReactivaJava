@@ -11,7 +11,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Document(collection = "productos")
 public class Producto {
 
