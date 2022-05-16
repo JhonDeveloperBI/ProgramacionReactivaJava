@@ -2,7 +2,7 @@ package com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb;
 
 import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.documents.Categoria;
 import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.documents.Producto;
-import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.services.ProductoServiceImpl;
+import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.services.ProductoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class SpringBootWebfluxWebApplication implements CommandLineRunner {
 	private static final Logger log = LoggerFactory.getLogger(SpringBootWebfluxWebApplication.class);
 
 	@Autowired
-	private ProductoServiceImpl productoService;
+	private ProductoService productoService;
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;

@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.controllers;
 
 
+import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.documents.Categoria;
 import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.documents.Producto;
 import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.services.ProductoService;
 import org.slf4j.Logger;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
@@ -30,6 +28,11 @@ public class ProductoController {
 
     @Autowired
     private ProductoService service;
+
+    @ModelAttribute("categorias")
+    public Flux<Categoria> categorias(){
+        return service.findAllCategoria();
+    }
 
     @GetMapping({"/listar","/"})
     public Mono<String> listar(Model model){
