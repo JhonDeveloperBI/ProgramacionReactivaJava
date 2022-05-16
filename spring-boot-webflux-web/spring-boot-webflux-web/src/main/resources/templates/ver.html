@@ -13,6 +13,12 @@
 <a th:href="@{/listar}"> volver</a>
 
 <div>
+    <img th:if="${producto.foto != null && #strings.length(producto.foto)>0}"
+         style="max-width: 25%;"
+         th:src="@{/uploads/img/} + ${producto.foto}" th:alt="${producto.nombre}" />
+</div>
+
+<div>
     <ul>
         <li th:text="${producto.id}"></li>
         <li th:text="'Id:' + ${producto.nombre}"></li>
