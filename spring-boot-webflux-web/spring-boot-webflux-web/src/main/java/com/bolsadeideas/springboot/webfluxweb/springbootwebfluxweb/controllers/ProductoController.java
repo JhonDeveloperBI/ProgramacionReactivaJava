@@ -7,6 +7,8 @@ import com.bolsadeideas.springboot.webfluxweb.springbootwebfluxweb.models.servic
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,8 +19,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 
 @SessionAttributes("producto")
 @Controller
@@ -28,6 +32,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService service;
+
+    @Value("${config.uploads.path}")
+    private String pathImages;
 
     @ModelAttribute("categorias")
     public Flux<Categoria> categorias(){
@@ -88,7 +95,7 @@ public class ProductoController {
         return null;
     }
     @PostMapping("/form")
-    public Mono<String> guardar(@Valid Producto producto, BindingResult result, Model model, SessionStatus status){
+    public Mono<String> guardar(@Valid Producto producto, BindingResult result, Model model,@RequestPart FilePart file, SessionStatus status){
 
         if(result.hasErrors()){
             model.addAttribute("titulo","Errores en formulario producto");
@@ -105,12 +112,26 @@ public class ProductoController {
                    producto.setCreateAt(new Date());
                }
 
+               if(!file.filename().isEmpty()){
+                   producto.setFoto(UUID.randomUUID().toString()+"-"+file.filename()
+                           .replace(" ","")
+                           .replace(":","")
+                           .replace("\\","")
+                   );
+               }
+
                 producto.setCategoria(c);
                 return service.save(producto);
             }).doOnNext(p -> {
                 log.info("Categoria asignada:"+p.getCategoria().getNombre() +"IdCategoria: "+p.getCategoria().getId());
                 log.info("producto guardado" + p.getNombre() + " Id " + p.getId());
-            }).thenReturn("redirect:/listar?sucess=producto+guardado+con+exito");
+            }).flatMap(p ->{
+               if(!file.filename().isEmpty()){
+                   return file.transferTo(new File(pathImages + p.getFoto() ));
+               }
+               return Mono.empty();
+                   })
+                   .thenReturn("redirect:/listar?sucess=producto+guardado+con+exito");
 
         }
     }

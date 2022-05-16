@@ -33,6 +33,8 @@ public class Producto {
     @Valid
     private Categoria categoria;
 
+    private String foto;
+
     public Producto(){
     }
 
