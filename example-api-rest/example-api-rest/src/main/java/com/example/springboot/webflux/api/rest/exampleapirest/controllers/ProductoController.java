@@ -2,16 +2,21 @@ package com.example.springboot.webflux.api.rest.exampleapirest.controllers;
 
 import com.example.springboot.webflux.api.rest.exampleapirest.models.documents.Producto;
 import com.example.springboot.webflux.api.rest.exampleapirest.models.services.ProductoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Date;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/productos")
@@ -19,6 +24,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService service;
+
+    @Value("${config.uploads.path}")
+    private String path;
 
     @GetMapping
     public Mono<ResponseEntity<Flux<Producto>>> lista(){
@@ -39,6 +47,19 @@ public class ProductoController {
 
     }
 
+
+    @PostMapping("/upload/{id}")
+    public Mono<ResponseEntity<Producto>> upload(@PathVariable String id, @RequestPart FilePart file){
+        return service.findById(id).flatMap(p -> {
+                    p.setFoto(UUID.randomUUID().toString() + "-" + file.filename()
+                            .replace(" ", "")
+                            .replace(":", "")
+                            .replace("\\", ""));
+
+                    return file.transferTo(new File(path + p.getFoto())).then(service.save(p));
+                }).map(p -> ResponseEntity.ok(p))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
     @PostMapping
     public Mono<ResponseEntity<Producto>> crear(@RequestBody  Producto producto){
         if(producto.getCreateAt() == null){
