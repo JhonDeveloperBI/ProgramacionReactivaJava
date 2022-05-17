@@ -9,6 +9,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
+
 @Component
 public class ProductoHandler {
 
@@ -18,9 +20,15 @@ public class ProductoHandler {
     public Mono<ServerResponse> listar(ServerRequest request){
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.findAll(), Producto.class);
-
-
     }
 
+    public Mono<ServerResponse> ver(ServerRequest request){
+        String id = request.pathVariable("id");
+        return service.findById(id).flatMap( p -> ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(fromValue(p)))
+                .switchIfEmpty(ServerResponse.notFound().build());
+
+    }
 
 }
