@@ -91,4 +91,27 @@ class ExampleApiRestApplicationTests {
 				.jsonPath("$.categoria.nombre").isEqualTo("Electrónico");
 	}
 
+	@Test
+	public void editarTest(){
+		Categoria categoria = productoService.findCategoriaByNombre("Electrónico").block();
+		Producto producto = productoService.findByNombre("Sony Camara HD").block();
+
+		Producto productoEditado = new Producto("Asus Notebook",1000.00,categoria);
+
+		client.put().uri("/api/v2/productos/{id}", Collections.singletonMap("id",producto.getId()))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(Mono.just(productoEditado),Producto.class)
+				.exchange()
+				.expectStatus().isCreated()
+				.expectHeader().contentType(MediaType.APPLICATION_JSON)
+				.expectBody()
+				.jsonPath("$.id").isNotEmpty()
+				.jsonPath("$.nombre").isEqualTo("Asus Notebook")
+				.jsonPath("$.categoria.nombre").isEqualTo("Electrónico");
+
+
+
+	}
+
 }
