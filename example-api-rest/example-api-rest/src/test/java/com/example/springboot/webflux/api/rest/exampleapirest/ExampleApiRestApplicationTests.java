@@ -1,5 +1,6 @@
 package com.example.springboot.webflux.api.rest.exampleapirest;
 
+import com.example.springboot.webflux.api.rest.exampleapirest.models.documents.Categoria;
 import com.example.springboot.webflux.api.rest.exampleapirest.models.documents.Producto;
 import com.example.springboot.webflux.api.rest.exampleapirest.models.services.ProductoService;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +22,7 @@ class ExampleApiRestApplicationTests {
 
 	@Autowired
 	private ProductoService productoService;
+
 
 	@Test
 	public void listarTest() {
@@ -68,6 +70,25 @@ class ExampleApiRestApplicationTests {
 				.jsonPath("$.id").isNotEmpty()
 				.jsonPath("$.nombre").isEqualTo("TV panasonic");
 
+	}
+
+	@Test
+	public void crearTest(){
+
+		Categoria categoria = productoService.findCategoriaByNombre("Electrónico").block();
+
+		Producto producto = new Producto("tv test",4550.10,categoria);
+		client.post().uri("/api/v2/productos")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.body(Mono.just(producto),Producto.class)
+				.exchange()
+				.expectStatus().isCreated()
+				.expectHeader().contentType(MediaType.APPLICATION_JSON)
+				.expectBody()
+				.jsonPath("$.id").isNotEmpty()
+				.jsonPath("$.nombre").isEqualTo("tv test")
+				.jsonPath("$.categoria.nombre").isEqualTo("Electrónico");
 	}
 
 }
