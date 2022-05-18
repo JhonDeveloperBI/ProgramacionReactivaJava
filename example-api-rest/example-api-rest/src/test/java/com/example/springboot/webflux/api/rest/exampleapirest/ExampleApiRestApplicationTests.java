@@ -6,6 +6,7 @@ import com.example.springboot.webflux.api.rest.exampleapirest.models.services.Pr
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -23,11 +24,14 @@ class ExampleApiRestApplicationTests {
 	@Autowired
 	private ProductoService productoService;
 
+	@Value("${config.base.endpoint}")
+	private String url;
+
 
 	@Test
 	public void listarTest() {
 		client.get()
-				.uri("/api/v2/productos")
+				.uri(url)
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -39,7 +43,7 @@ class ExampleApiRestApplicationTests {
 	@Test
 	public void listar2Test() {
 		client.get()
-				.uri("/api/v2/productos")
+				.uri(url)
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -61,7 +65,7 @@ class ExampleApiRestApplicationTests {
 		Mono<Producto> productoMono = productoService.findByNombre("TV panasonic");
 
 		client.get()
-				.uri("/api/v2/productos/{id}", Collections.singletonMap("id",productoMono.block().getId()))
+				.uri(url+"/{id}", Collections.singletonMap("id",productoMono.block().getId()))
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -78,7 +82,7 @@ class ExampleApiRestApplicationTests {
 		Categoria categoria = productoService.findCategoriaByNombre("Electrónico").block();
 
 		Producto producto = new Producto("tv test",4550.10,categoria);
-		client.post().uri("/api/v2/productos")
+		client.post().uri(url)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.body(Mono.just(producto),Producto.class)
@@ -98,7 +102,7 @@ class ExampleApiRestApplicationTests {
 
 		Producto productoEditado = new Producto("Asus Notebook",1000.00,categoria);
 
-		client.put().uri("/api/v2/productos/{id}", Collections.singletonMap("id",producto.getId()))
+		client.put().uri(url + "/{id}", Collections.singletonMap("id",producto.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.body(Mono.just(productoEditado),Producto.class)
@@ -115,13 +119,13 @@ class ExampleApiRestApplicationTests {
 	public void eliminarTest(){
 		Producto producto = productoService.findByNombre("Bicicleta").block();
 
-		client.delete().uri("/api/v2/productos/{id}")
+		client.delete().uri(url+"/{id}")
 				.exchange()
 				.expectStatus().isNoContent()
 				.expectBody()
 				.isEmpty();
 
-		client.get().uri("/api/v2/productos/{id}")
+		client.get().uri(url+"/{id}")
 				.exchange()
 				.expectStatus().isNotFound()
 				.expectBody()
