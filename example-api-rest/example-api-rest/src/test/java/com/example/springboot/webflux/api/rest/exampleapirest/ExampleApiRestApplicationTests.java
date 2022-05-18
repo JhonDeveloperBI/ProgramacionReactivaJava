@@ -109,9 +109,24 @@ class ExampleApiRestApplicationTests {
 				.jsonPath("$.id").isNotEmpty()
 				.jsonPath("$.nombre").isEqualTo("Asus Notebook")
 				.jsonPath("$.categoria.nombre").isEqualTo("Electrónico");
-
-
-
 	}
+
+	@Test
+	public void eliminarTest(){
+		Producto producto = productoService.findByNombre("Bicicleta").block();
+
+		client.delete().uri("/api/v2/productos/{id}")
+				.exchange()
+				.expectStatus().isNoContent()
+				.expectBody()
+				.isEmpty();
+
+		client.get().uri("/api/v2/productos/{id}")
+				.exchange()
+				.expectStatus().isNotFound()
+				.expectBody()
+				.isEmpty();
+	}
+
 
 }
